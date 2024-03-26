@@ -1,10 +1,17 @@
 # module load openmpi/5.0.2 smartRedis/1.3.10
-# redis-server /home/andres/code/smartsim/Project/ver5/redis.conf
+# redis-server ./c6378_redis.conf
+# redis-server ./c6379_redis.conf
+# redis-server ./py_redis.conf
 # redis-cli shutdown nosave
 # sudo lsof -i :6379
 # redis-cli ping
 # /etc/init.d/redis-server stop
 
+# redis-cli --cluster create 127.0.0.1:6378 127.0.0.1:6379 127.0.0.1:6380 			#--cluster-replicas 1
+# redis-cli -p 6379 -c
+# cluster slots
+
+# For ever primary create 1 replica
 
 CC = 			mpicxx
 

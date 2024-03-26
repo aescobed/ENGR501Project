@@ -1,8 +1,10 @@
 from smartsim import Experiment
-from smartredis import Client
+from smartredis import ConfigOptions, Client
+from smartredis import *
+from smartredis.error import *
 import numpy as np
 
-REDIS_PORT = 6379
+REDIS_PORT = 6380
 
 exp = Experiment("GPU_Optimizer", launcher="auto")
 
@@ -11,13 +13,14 @@ mpirun = exp.create_run_settings(
     "./program", run_command="mpirun"
 )
 
-db = exp.create_database(db_nodes=1, port=REDIS_PORT, interface="lo")
-exp.generate(db)
-exp.start(db)
+multi_shard_config = ConfigOptions.create_from_environment("OPTIMIZER")
 
-client = Client(address=db.get_address()[0], cluster=False)
+multi_shard_client = Client(multi_shard_config, logger_name="Model: multi shard logger")
 
-print("Address =", db.get_address()[0])
+# db = exp.create_database(db_nodes=1, port=REDIS_PORT, interface="lo")
+# exp.generate(db)
+# client = Client(address=db.get_address()[0], cluster=True)
+
 
 #send_tensor = np.ones((4,3,3))
 #client.put_tensor("tutorial_tensor_1", send_tensor)
@@ -33,13 +36,7 @@ exp.start(model, block=True, summary=True)
 print(f"Model status: {exp.get_status(model)}")
 
 
-retrieved_tensor = client.get_tensor("my_tensor")
+retrieved_tensor = multi_shard_client.get_tensor("my_tensor")
 print(retrieved_tensor)
 
-# Note: At this point, the C program ("my_c_program") will be executed as part of the experiment
-# It should be designed to retrieve "tutorial_tensor_1", modify it, and perhaps save it back under a new key
 
-
-
-# After the C program has run, you can retrieve and process the modified tensor as needed
-# For example, if the C program saved the modified tensor with a new key:

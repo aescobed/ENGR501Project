@@ -43,11 +43,32 @@ int main(int argc, char* argv[]) {
 
     // Put tensor into the database
     const char* tensor_key = "my_tensor";
-    size_t key_length = strlen(tensor_key);
+    const size_t key_length = strlen(tensor_key);
 
     put_tensor(client, tensor_key, key_length, tensor_data, dims, 1, SRTensorTypeDouble, SRMemLayoutNested);
 
     printf("Tensor put into database: %s\n", tensor_key);
+
+    void* tensor_receive_data = NULL;
+    size_t* dims_receive = NULL;
+    size_t num_dims_receive;
+
+    SRTensorType TensorTypeReceived;
+
+    get_tensor(client, tensor_key, key_length, &tensor_receive_data, &dims_receive, &num_dims_receive, &TensorTypeReceived, SRMemLayoutNested);
+
+    printf("Tensor={");
+
+    double* data = (double*)tensor_receive_data;
+
+    int i;
+    for(i = 0; i < dims[0]; i++)
+    {
+        printf("%f", data[i]);
+        if(i<dims[0])
+            printf(",");
+    }
+    printf("}");
 
     // Always delete the client when done
     DeleteCClient(&client);
