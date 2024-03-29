@@ -2,6 +2,10 @@
 # redis-server ./c6378_redis.conf
 # redis-server ./c6379_redis.conf
 # redis-server ./py_redis.conf
+
+# make all
+# python launch_program.py
+
 # redis-cli shutdown nosave
 # sudo lsof -i :6379
 # redis-cli ping
