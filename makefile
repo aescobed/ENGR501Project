@@ -1,34 +1,20 @@
-# module load openmpi/5.0.2 smartRedis/1.3.10
-# redis-server ./c6378_redis.conf
-# redis-server ./c6379_redis.conf
-# redis-server ./py_redis.conf
 
-# make all
-# python launch_program.py
-
-# redis-cli shutdown nosave
-# sudo lsof -i :6379
-# redis-cli ping
-# /etc/init.d/redis-server stop
-
-# redis-cli --cluster create 127.0.0.1:6378 127.0.0.1:6379 127.0.0.1:6380 			#--cluster-replicas 1
-# redis-cli -p 6379 -c
-# cluster slots
-
-# For ever primary create 1 replica
 
 CC = 			mpicxx
 
+CUC =			nvcc
 
 INC_FLAGS = 	-I/home/andres/code/smartsim/Project/libraries/SmartRedis/install/include 
 
-LD_FLAGS =  	-L/home/andres/code/smartsim/Project/libraries/SmartRedis/install/lib
+LD_FLAGS =  	-L/home/andres/code/smartsim/Project/libraries/SmartRedis/install/lib \
+				-L/home/andres/Software/cuda/cuda_toolkit_12.3/install/toolkit/lib64
 
 CXXFLAGS =		-std=c++17 $(INC_FLAGS)
 
-LIBS = 			-lsmartredis
+LIBS = 			-lsmartredis -lcudart
 
-C_FILES =		c_program.c
+C_FILES =		main.c \
+				c_communicator.c
 
 CPP_FILES =		c_client.cpp \
 				c_configoptions.cpp \
@@ -37,7 +23,10 @@ CPP_FILES =		c_client.cpp \
 				c_logcontext.cpp \
 				c_logger.cpp
 
-C_OBJS = 		c_program.o 
+CU_FILES =		cuda_test.cu
+
+C_OBJS = 		main.o \
+				c_communicator.o
 
 CPP_OBJS = 		c_client.o \
 				c_configoptions.o \
@@ -46,11 +35,13 @@ CPP_OBJS = 		c_client.o \
 				c_logcontext.o \
 				c_logger.o
 
+CU_OBJS = 		cuda_test.o
+
 EXECUTABLE =	program
 
 # Default target
-all: $(C_OBJS) $(CPP_OBJS)
-	$(CC) $(LD_FLAGS) -o $(EXECUTABLE) $(C_OBJS) $(CPP_OBJS) $(LIBS)
+all: $(C_OBJS) $(CPP_OBJS) $(CU_OBJS)
+	$(CC) $(LD_FLAGS) -o $(EXECUTABLE) $(C_OBJS) $(CPP_OBJS) $(CU_OBJS) $(LIBS)
 
 # To compile C files
 %.o: %.c
@@ -59,6 +50,10 @@ all: $(C_OBJS) $(CPP_OBJS)
 # To compile C++ files
 %.o: %.cpp
 	$(CC) $(CXXFLAGS) $< -c -o $@
+
+# To compile cu files
+%.o: %.cu
+	$(CUC) $< -c -o $@
 
 # Clean up
 clean:

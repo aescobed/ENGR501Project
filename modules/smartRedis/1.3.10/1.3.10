@@ -1,0 +1,5 @@
+#%Module1.0
+prepend-path LD_LIBRARY_PATH /home/andres/code/smartsim/Project/libraries/SmartRedis/install/lib
+prepend-path LD_LIBRARY_PATH /home/andres/code/smartsim/Project/libraries/RedisAI/bin/linux-x64-release/install-gpu
+setenv SSDB_OPTIMIZER 127.0.0.1:6379
+
