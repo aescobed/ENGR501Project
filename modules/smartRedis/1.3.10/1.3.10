@@ -2,4 +2,5 @@
 prepend-path LD_LIBRARY_PATH /home/andres/code/smartsim/Project/libraries/SmartRedis/install/lib
 prepend-path LD_LIBRARY_PATH /home/andres/code/smartsim/Project/libraries/RedisAI/bin/linux-x64-release/install-gpu
 setenv SSDB_OPTIMIZER 127.0.0.1:6379
-
+setenv SR_LOG_FILE /home/andres/code/smartsim/Project/ver5/ENGR501Project/log/logfile.log
+setenv SR_LOG_LEVEL INFO
