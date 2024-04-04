@@ -20,13 +20,35 @@ int main (int argc, char** argv)
     void* client;
     struct tensorSender ts;
 
-    if(world_rank!=0)
+    if(world_rank==0)
     {
         client = StartClient();
         ts = CreateTensorSender(3, client);
-        DeleteTensorSender(ts);
-        EndClient(client);
+
+        SetTensorValue(&ts, 0, 2);
+        SetTensorValue(&ts, 1, 6);
+        SetTensorValue(&ts, 2, 5);
+
+        SendTensor(&ts);
+
+        void* tensor_receive_data = NULL;
+
+        tensor_receive_data = GetTensor(&ts);
+
+            printf("Tensor={");
+
+            double* data = (double*)tensor_receive_data;
+
+            int i;
+            for(i = 0; i < ts.dims[0]; i++)
+            {
+                printf("%f", data[i]);
+                if(i<ts.dims[0])
+                    printf(",");
+            }
+            printf("}\n");
     }
+
 
 
 
@@ -75,6 +97,11 @@ int main (int argc, char** argv)
     free(hostArrayC);
 
 
+    if(world_rank==0)
+    {
+        DeleteTensorSender(ts);
+        EndClient(client);
+    }
 
     MPI_Finalize();
 

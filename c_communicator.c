@@ -51,6 +51,9 @@ struct tensorSender CreateTensorSender(int size, void* client)
     ts.size = size;
     ts.client = client;
     ts.tensor = (double*)malloc(sizeof(double) * size);
+    ts.tensor_key = "my_tensor";
+    ts.dims[0] = size;
+    ts.key_length = strlen(ts.tensor_key);
 
     return ts;
 }
@@ -60,3 +63,37 @@ void DeleteTensorSender(tensorSender ts)
 {
     free(ts.tensor);
 }
+
+
+
+void SetTensorValue(struct tensorSender* ts, int ind, double val)
+{
+    if (ind < 0 || ind >= ts->size)
+
+        printf("Error Setting tensor!\n");
+
+    else
+        ts->tensor[ind] = val;
+
+}
+
+
+void SendTensor(struct tensorSender* ts)
+{
+    put_tensor(ts->client, ts->tensor_key, ts->key_length, ts->tensor, ts->dims, 1, SRTensorTypeDouble, SRMemLayoutNested);
+}
+
+void* GetTensor(struct tensorSender* ts)
+{
+    void* tensor_receive_data = NULL;
+    size_t* dims_receive = NULL;
+    size_t num_dims_receive;
+
+    SRTensorType TensorTypeReceived;
+
+    get_tensor(ts->client, ts->tensor_key, ts->key_length, &tensor_receive_data, &dims_receive, &num_dims_receive, &TensorTypeReceived, SRMemLayoutNested);
+
+    return tensor_receive_data;
+}
+
+
