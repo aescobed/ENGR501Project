@@ -1,4 +1,6 @@
 
+#include "c_communicator.h"
+
 extern "C" {
-int* callKernel(int w_size, int comm, int arr_size, int* hA, int* hB, int* hC, int repeat);
+int* callKernel(int w_size, int comm, int arraySize, int* hA, int* hB, int* hC, tensorSender* MLParameters); 
 }

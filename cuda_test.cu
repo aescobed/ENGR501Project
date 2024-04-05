@@ -5,6 +5,7 @@
 
 
 #include "include/cuda_test.cuh"
+#include "include/c_communicator.h"
 
 // Kernel function to add two arrays element-wise
 __global__ void addArrays(int* a, int* b, int* c, int size, int repeat) {
@@ -24,8 +25,10 @@ __global__ void addArrays(int* a, int* b, int* c, int size, int repeat) {
 extern "C"
 {
 
-int* callKernel(int w_size, int comm, int arraySize, int* hA, int* hB, int* hC, int repeat) 
+int* callKernel(int w_size, int comm, int arraySize, int* hA, int* hB, int* hC, tensorSender* MLParameters) 
 {
+
+    int repeat = (int)MLParameters->tensor[1];
 
     int over = comm * (int)ceil(arraySize/(double) w_size) + (int)ceil(arraySize/(double) w_size) - arraySize;
 

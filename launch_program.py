@@ -7,14 +7,26 @@ import ML.model as model
 
 REDIS_PORT = 6380
 
+# Start experiment
 exp = Experiment("GPU_Optimizer", launcher="auto")
 
+# Start client
 multi_shard_config = ConfigOptions.create_from_environment("OPTIMIZER")
-
 multi_shard_client = Client(multi_shard_config, logger_name="Model: multi shard logger")
 
-param_in = np.array([3, 1, 1, 1, 1, 1, 1 ,1, 2, 3])
 
+
+
+
+ML_params = model.SimpleParameters()
+ML_params.reset()
+
+print(ML_params.state[0] , "   " , ML_params.state[1])
+
+# Set the parameters which the c program will use
+param_in = np.array([[ML_params.state[0], ML_params.state[1], 1, 1],[0,0,0,0]])
+
+# Send the tensor with the parameters to the smartredis database
 multi_shard_client.put_tensor("parameters", param_in)
 
 

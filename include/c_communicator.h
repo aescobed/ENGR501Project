@@ -24,7 +24,7 @@ void SetTensorOutputValue(struct tensorSender* ts, int ind, double val);
 
 void SendTensor(struct tensorSender* ts);
 
-void* GetTensor(struct tensorSender* ts);
+void GetTensor(struct tensorSender* ts);
 
 void ReceiveAndPrintTensorSender(struct tensorSender* ts);
 

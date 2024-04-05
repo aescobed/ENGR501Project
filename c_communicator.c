@@ -71,7 +71,11 @@ struct tensorSender CreateTensorSender(int size, void* client)
 
 void DeleteTensorSender(tensorSender* ts)
 {
-    free(ts->tensor);
+    if (ts->tensor != NULL) {
+        free(ts->tensor);
+        ts->tensor = NULL;
+    }
+    
 }
 
 
@@ -106,7 +110,7 @@ void SendTensor(struct tensorSender* ts)
     put_tensor(ts->client, ts->tensor_key, ts->key_length, ts->tensor, ts->dims, 2, SRTensorTypeDouble, SRMemLayoutContiguous);
 }
 
-void* GetTensor(struct tensorSender* ts)
+void GetTensor(struct tensorSender* ts)
 {
     void* tensor_receive_data = NULL;
     size_t* dims_receive = NULL;
@@ -114,9 +118,14 @@ void* GetTensor(struct tensorSender* ts)
 
     SRTensorType TensorTypeReceived;
 
-    get_tensor(ts->client, ts->tensor_key, ts->key_length, &tensor_receive_data, &dims_receive, &num_dims_receive, &TensorTypeReceived, SRMemLayoutNested);
+    get_tensor(ts->client, ts->tensor_key, ts->key_length, &tensor_receive_data, &dims_receive, &num_dims_receive, &TensorTypeReceived, SRMemLayoutContiguous);
 
-    return tensor_receive_data;
+    double* data = (double*)tensor_receive_data;
+
+    free(ts->tensor);
+
+    ts->tensor = data;
+
 }
 
 
@@ -124,16 +133,14 @@ void ReceiveAndPrintTensorSender(struct tensorSender* ts)
 {
     void* tensor_receive_data = NULL;
 
-    tensor_receive_data = GetTensor(ts);
+    GetTensor(ts);
 
     printf("%s={{", ts->tensor_key);
-
-    double* data = (double*)tensor_receive_data;
 
     int i;
     for(i = 0; i < ts->dims[1]; i++)
     {
-        printf("%f", data[i]);
+        printf("%f", ts->tensor[i]);
         if(i<ts->dims[1])
             printf(",");
     }
@@ -142,7 +149,7 @@ void ReceiveAndPrintTensorSender(struct tensorSender* ts)
 
     for(i = ts->dims[0]; i < ts->dims[0] + ts->dims[1]; i++)
     {
-        printf("%f", data[i]);
+        printf("%f", ts->tensor[i]);
         if(i<ts->dims[1])
             printf(",");
     }

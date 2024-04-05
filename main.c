@@ -26,13 +26,20 @@ int main (int argc, char** argv)
  
 
         client = StartClient();
-        params = CreateTensorSender(1, client);
-        SetTensorParameterValue(&params, 0, 114);
-        SetTensorOutputValue(&params, 0, 13);
+        params = CreateTensorSender(4, client);
 
-        SendTensor(&params);
-        ReceiveAndPrintTensorSender(&params);
+        SetTensorParameterValue(&params, 0, 1);
+        SetTensorParameterValue(&params, 1, 1);
+        SetTensorParameterValue(&params, 2, 1);
+        SetTensorParameterValue(&params, 3, 1);
+        SetTensorOutputValue(&params, 0, 1);
+        SetTensorOutputValue(&params, 1, 1);
+        SetTensorOutputValue(&params, 2, 1);
+        SetTensorOutputValue(&params, 3, 1);
 
+        GetTensor(&params);
+
+        printf("value === %f", params.tensor[0]);
 
     }
 
@@ -53,11 +60,18 @@ int main (int argc, char** argv)
         hostArrayB[i] = i * 10;
     }
 
-    // Amount of times each GPU thread does the same task
-    const int repeat = 2;
+    double all_gpu_timer;
+    if(world_rank==0)
+    {  
+        all_gpu_timer = MPI_Wtime();
+    }
 
-    hostArrayC = callKernel(world_size, world_rank, arraySize, hostArrayA, hostArrayB, hostArrayC, repeat);
+    hostArrayC = callKernel(world_size, world_rank, arraySize, hostArrayA, hostArrayB, hostArrayC, &params);
     
+    if(world_rank==0)
+    {  
+        all_gpu_timer = MPI_Wtime() - all_gpu_timer;
+    }
 
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -72,7 +86,7 @@ int main (int argc, char** argv)
             MPI_Recv(hostArrayC + (int)(i* ceil(arraySize/(double) world_size)), ceil(arraySize/(double) world_size), MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
             
         for (int i = 0; i < arraySize; i++) {
-            std::cout << hostArrayA[i] << " + " << hostArrayB[i] << " = " << hostArrayC[i] << std::endl;
+            //std::cout << hostArrayA[i] << " + " << hostArrayB[i] << " = " << hostArrayC[i] << std::endl;
         }    
         
         std::cout << "Program finished with " << world_size << " processes\n";
@@ -86,14 +100,21 @@ int main (int argc, char** argv)
 
     if(world_rank==0)
     {
-        /*
-        SetTensorParameterValue(&params, 0, 13);
-        SetTensorParameterValue(&params, 2, 1234);
-        SetTensorParameterValue(&params, 5, 34);
-        */
-        //SetTensorOutputValue(&params, 6, 345);
-        //SendTensor(&params);
-        DeleteTensorSender(&params);
+        SetTensorParameterValue(&params, 0, params.tensor[0]);
+        SetTensorParameterValue(&params, 1, params.tensor[1]);
+        SetTensorParameterValue(&params, 2, params.tensor[2]);
+        SetTensorParameterValue(&params, 3, params.tensor[3]);
+        SetTensorOutputValue(&params, 0, all_gpu_timer);
+        SetTensorOutputValue(&params, 1, 1);
+        SetTensorOutputValue(&params, 2, 1);
+        SetTensorOutputValue(&params, 3, 1);
+
+        SendTensor(&params);
+
+       
+        //DeleteTensorSender(&params);
+
+        
         EndClient(client);
     }
 

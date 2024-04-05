@@ -6,11 +6,14 @@ import numpy as np
 
 class SimpleParameters:
     def __init__(self):
-        self.action_space = 1  # Two parameters to optimize
-        self.bounds = [[0, 10]] #, [0, 30]]  # Bounds for each parameter
+        self.action_space = 2  # Two parameters to optimize
+        
+        # First parameter is block size - maximum threads per block is 1024
+        # Second parameter is the number of operations per GPU thread
+        self.bounds = [[1, 1024] , [1, 100]]
 
     def reset(self):
-        self.state = [random.uniform(*self.bounds[0])] #, random.uniform(*self.bounds[1])]
+        self.state = [random.uniform(*self.bounds[0]), random.uniform(*self.bounds[1])]
         return self.state
 
 
@@ -32,8 +35,8 @@ class DQN(nn.Module):
 
 
 def train_dqn(epochs=1):
-    env = SimpleParameters()
-    model = DQN(input_size=1, output_size=1)
+    params = SimpleParameters()
+    model = DQN(input_size=2, output_size=2)
     optimizer = optim.Adam(model.parameters())
     loss_fn = nn.MSELoss()
     gamma = 0.95
