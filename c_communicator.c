@@ -44,6 +44,8 @@ void EndClient(void* client)
 }
 
 
+
+
 struct tensorSender CreateTensorSender(int size, void* client)
 {
     struct tensorSender ts;
@@ -51,12 +53,15 @@ struct tensorSender CreateTensorSender(int size, void* client)
     ts.size = size;
     ts.client = client;
     ts.tensor = (double*)malloc(sizeof(double) * size);
-    ts.tensor_key = "my_tensor";
+    ts.tensor_key = "parameters";
+    
+
     ts.dims[0] = size;
     ts.key_length = strlen(ts.tensor_key);
 
     return ts;
 }
+
 
 
 void DeleteTensorSender(tensorSender ts)

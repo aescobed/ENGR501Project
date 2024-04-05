@@ -14,19 +14,16 @@ class SimpleParameters:
         return self.state
 
 
-
-
-
-
-
-
 class DQN(nn.Module):
+
+    # initialize the neural net
     def __init__(self):
         super(DQN, self).__init__()
         self.fc1 = nn.Linear(1, 64)
         self.fc2 = nn.Linear(64, 32)
         self.fc3 = nn.Linear(32, 2)
 
+    # forward propagation
     def forward(self, x):
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
@@ -34,7 +31,7 @@ class DQN(nn.Module):
 
 
 
-def train_dqn(epochs=1000):
+def train_dqn(epochs=1):
     env = SimpleParameters()
     model = DQN(input_size=1, output_size=1)
     optimizer = optim.Adam(model.parameters())
@@ -83,4 +80,3 @@ def train_dqn(epochs=1000):
 
         if epoch % 100 == 0:
             print(f"Epoch {epoch}/{epochs}, Epsilon: {epsilon}")
-

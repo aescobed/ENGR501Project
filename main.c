@@ -18,35 +18,47 @@ int main (int argc, char** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
 
     void* client;
-    struct tensorSender ts;
+    struct tensorSender params;
 
     if(world_rank==0)
     {
-        client = StartClient();
-        ts = CreateTensorSender(3, client);
 
+ 
+
+        client = StartClient();
+        params = CreateTensorSender(10, client);
+
+/*
+        printf("NAME = %s", ts_in.tensor_key);
+
+        
         SetTensorValue(&ts, 0, 2);
         SetTensorValue(&ts, 1, 6);
         SetTensorValue(&ts, 2, 5);
+        
+
 
         SendTensor(&ts);
+        
 
         void* tensor_receive_data = NULL;
 
-        tensor_receive_data = GetTensor(&ts);
+        tensor_receive_data = GetTensor(&ts_in);
 
             printf("Tensor={");
 
             double* data = (double*)tensor_receive_data;
 
             int i;
-            for(i = 0; i < ts.dims[0]; i++)
+            for(i = 0; i < ts_in.dims[0]; i++)
             {
                 printf("%f", data[i]);
-                if(i<ts.dims[0])
+                if(i<ts_in.dims[0])
                     printf(",");
             }
             printf("}\n");
+
+        */
     }
 
 
@@ -99,7 +111,11 @@ int main (int argc, char** argv)
 
     if(world_rank==0)
     {
-        DeleteTensorSender(ts);
+        SetTensorValue(&params, 0, 13);
+        SetTensorValue(&params, 7, 6);
+        SetTensorValue(&params, 4, 4);
+        SendTensor(&params);
+        DeleteTensorSender(params);
         EndClient(client);
     }
 
