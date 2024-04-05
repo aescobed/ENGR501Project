@@ -52,11 +52,16 @@ struct tensorSender CreateTensorSender(int size, void* client)
     
     ts.size = size;
     ts.client = client;
-    ts.tensor = (double*)malloc(sizeof(double) * size);
-    ts.tensor_key = "parameters";
-    
+    ts.tensor = (double*)malloc(sizeof(double) * size * 2);
 
-    ts.dims[0] = size;
+    if (ts.tensor == NULL) {
+        fprintf(stderr, "Failed to allocate memory for the tensor.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    ts.tensor_key = "parameters";
+    ts.dims[0] = 2;
+    ts.dims[1] = size;
     ts.key_length = strlen(ts.tensor_key);
 
     return ts;
@@ -64,14 +69,14 @@ struct tensorSender CreateTensorSender(int size, void* client)
 
 
 
-void DeleteTensorSender(tensorSender ts)
+void DeleteTensorSender(tensorSender* ts)
 {
-    free(ts.tensor);
+    free(ts->tensor);
 }
 
 
 
-void SetTensorValue(struct tensorSender* ts, int ind, double val)
+void SetTensorParameterValue(struct tensorSender* ts, int ind, double val)
 {
     if (ind < 0 || ind >= ts->size)
 
@@ -83,9 +88,22 @@ void SetTensorValue(struct tensorSender* ts, int ind, double val)
 }
 
 
+void SetTensorOutputValue(struct tensorSender* ts, int ind, double val)
+{
+    if (ind < 0 || ind >= ts->size)
+
+        printf("Error Setting tensor!\n");
+
+    else
+        ts->tensor[ts->size + ind] = val;
+
+}
+
+
+
 void SendTensor(struct tensorSender* ts)
 {
-    put_tensor(ts->client, ts->tensor_key, ts->key_length, ts->tensor, ts->dims, 1, SRTensorTypeDouble, SRMemLayoutNested);
+    put_tensor(ts->client, ts->tensor_key, ts->key_length, ts->tensor, ts->dims, 2, SRTensorTypeDouble, SRMemLayoutContiguous);
 }
 
 void* GetTensor(struct tensorSender* ts)
@@ -102,3 +120,32 @@ void* GetTensor(struct tensorSender* ts)
 }
 
 
+void ReceiveAndPrintTensorSender(struct tensorSender* ts)
+{
+    void* tensor_receive_data = NULL;
+
+    tensor_receive_data = GetTensor(ts);
+
+    printf("%s={{", ts->tensor_key);
+
+    double* data = (double*)tensor_receive_data;
+
+    int i;
+    for(i = 0; i < ts->dims[1]; i++)
+    {
+        printf("%f", data[i]);
+        if(i<ts->dims[1])
+            printf(",");
+    }
+
+    printf("},\n\t\t{");
+
+    for(i = ts->dims[0]; i < ts->dims[0] + ts->dims[1]; i++)
+    {
+        printf("%f", data[i]);
+        if(i<ts->dims[1])
+            printf(",");
+    }
+
+    printf("}}\n");
+}

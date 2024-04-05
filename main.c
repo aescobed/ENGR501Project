@@ -26,39 +26,14 @@ int main (int argc, char** argv)
  
 
         client = StartClient();
-        params = CreateTensorSender(10, client);
+        params = CreateTensorSender(1, client);
+        SetTensorParameterValue(&params, 0, 114);
+        SetTensorOutputValue(&params, 0, 13);
 
-/*
-        printf("NAME = %s", ts_in.tensor_key);
-
-        
-        SetTensorValue(&ts, 0, 2);
-        SetTensorValue(&ts, 1, 6);
-        SetTensorValue(&ts, 2, 5);
-        
+        SendTensor(&params);
+        ReceiveAndPrintTensorSender(&params);
 
 
-        SendTensor(&ts);
-        
-
-        void* tensor_receive_data = NULL;
-
-        tensor_receive_data = GetTensor(&ts_in);
-
-            printf("Tensor={");
-
-            double* data = (double*)tensor_receive_data;
-
-            int i;
-            for(i = 0; i < ts_in.dims[0]; i++)
-            {
-                printf("%f", data[i]);
-                if(i<ts_in.dims[0])
-                    printf(",");
-            }
-            printf("}\n");
-
-        */
     }
 
 
@@ -111,11 +86,14 @@ int main (int argc, char** argv)
 
     if(world_rank==0)
     {
-        SetTensorValue(&params, 0, 13);
-        SetTensorValue(&params, 7, 6);
-        SetTensorValue(&params, 4, 4);
-        SendTensor(&params);
-        DeleteTensorSender(params);
+        /*
+        SetTensorParameterValue(&params, 0, 13);
+        SetTensorParameterValue(&params, 2, 1234);
+        SetTensorParameterValue(&params, 5, 34);
+        */
+        //SetTensorOutputValue(&params, 6, 345);
+        //SendTensor(&params);
+        DeleteTensorSender(&params);
         EndClient(client);
     }
 
