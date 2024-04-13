@@ -5,7 +5,7 @@
 
 
 #include "include/cuda_test.cuh"
-#include "include/c_communicator.h"
+
 
 // Kernel function to add two arrays element-wise
 __global__ void addArrays(int* a, int* b, int* c, int size, int repeat) {

@@ -4,21 +4,25 @@ import torch.optim as optim
 import random
 import numpy as np
 
-class SimpleParameters:
+class SimpleFunctionEnv:
     def __init__(self):
-        self.action_space = 1  # Two parameters to optimize
-        self.bounds = [[0, 10]] #, [0, 30]]  # Bounds for each parameter
+        self.x = 0
+
+    def step(self, action):
+        step_size = 0.1
+        if action == 0:
+            self.x -= step_size
+        else:
+            self.x += step_size
+
+        reward = -(self.x - 2) ** 2
+        next_state = self.x
+        done = True if abs(self.x - 2) < 0.1 else False
+        return next_state, reward, done
 
     def reset(self):
-        self.state = [random.uniform(*self.bounds[0])] #, random.uniform(*self.bounds[1])]
-        return self.state
-
-
-
-
-
-
-
+        self.x = random.uniform(0, 4)
+        return self.x
 
 class DQN(nn.Module):
     def __init__(self):
@@ -32,55 +36,54 @@ class DQN(nn.Module):
         x = torch.relu(self.fc2(x))
         return self.fc3(x)
 
+env = SimpleFunctionEnv()
+model = DQN()
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+loss_fn = nn.MSELoss()
 
+episodes = 500
+epsilon = 1.0  # Starting value of epsilon
+epsilon_decay = 0.99  # Decay rate for epsilon
+min_epsilon = 0.01  # Minimum value of epsilon
 
-def train_dqn(epochs=1000):
-    env = SimpleParameters()
-    model = DQN(input_size=1, output_size=1)
-    optimizer = optim.Adam(model.parameters())
-    loss_fn = nn.MSELoss()
-    gamma = 0.95
-    epsilon = 1.0
-    epsilon_min = 0.01
-    epsilon_decay = 0.995
-    memory = deque(maxlen=2000)
+for episode in range(episodes):
+    state = env.reset()
+    done = False
+    total_loss = 0
+    while not done:
+        state_tensor = torch.FloatTensor([state]).unsqueeze(0)
+        q_values = model(state_tensor)
+        
+        # Epsilon-greedy action selection
+        if random.random() < epsilon:
+            action = random.randint(0, 1)  # Explore
+        else:
+            action = q_values.argmax().item()  # Exploit
 
-    for epoch in range(epochs):
-        state = torch.FloatTensor(env.reset()).unsqueeze(0)
-        for t in range(200):
-            if random.random() <= epsilon:
-                action = [random.randrange(3), random.randrange(3)]
-            else:
-                with torch.no_grad():
-                    action = model(state).argmax().item()
-            next_state, reward, done, _ = env.step(action)
-            next_state = torch.FloatTensor(next_state).unsqueeze(0)
-            reward = torch.tensor([reward], dtype=torch.float32)
+        next_state, reward, done = env.step(action)
+        q_value = q_values[0, action].unsqueeze(0)
+        next_state_tensor = torch.FloatTensor([next_state]).unsqueeze(0)
+        next_q_values = model(next_state_tensor)
+        max_next_q_value = torch.tensor([reward + 0.99 * next_q_values.max().item()], requires_grad=True)
 
-            memory.append((state, action, reward, next_state))
+        loss = loss_fn(q_value, max_next_q_value)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        
+        state = next_state
+        total_loss += loss.item()
 
-            if len(memory) > 128:
-                batch = random.sample(memory, 128)
-                batch_state, batch_action, batch_reward, batch_next_state = zip(*batch)
+        # Decay epsilon
+        epsilon = max(min_epsilon, epsilon * epsilon_decay)
 
-                batch_state = torch.cat(batch_state)
-                batch_next_state = torch.cat(batch_next_state)
-                batch_reward = torch.cat(batch_reward)
+    #if episode % 100 == 0:
+    print(f'Episode {episode}, Loss: {total_loss / (episode + 1)}, Epsilon: {epsilon}')
 
-                current_q = model(batch_state)
-                max_next_q = model(batch_next_state).max(1)[0]
-                expected_q = batch_reward + gamma * max_next_q
-
-                loss = loss_fn(current_q, expected_q.unsqueeze(1))
-
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
-
-            state = next_state
-            if epsilon > epsilon_min:
-                epsilon *= epsilon_decay
-
-        if epoch % 100 == 0:
-            print(f"Epoch {epoch}/{epochs}, Epsilon: {epsilon}")
+# Test the trained model
+test_state = env.reset()
+state_tensor = torch.FloatTensor([test_state]).unsqueeze(0)
+q_values = model(state_tensor)
+action = q_values.argmax().item()
+print(f'Test State: {test_state}, Action: {"Increase" if action else "Decrease"}')
 
