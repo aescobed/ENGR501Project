@@ -11,7 +11,9 @@ import math
 def env(parameters):
     target_values = [256, 128, 64]
     if parameters.ndim > 0:
+        #print(51 + sum(abs(256 - parameters[0][0])))
         return 51 + sum(abs(target - param) for target, param in zip(target_values, parameters))
+
     else:
         return 51 + abs(target_values[0] - parameters)  # Fallback if not iterable
 
@@ -41,7 +43,7 @@ class DQN(nn.Module):
 def epsilon_greedy(state, epsilon, q_network):
     if random.random() < epsilon:
         # Generate a random action with the correct shape
-        return torch.tensor([np.random.randint(0, 512, size=(3,))], dtype=torch.float).view(1, 3)
+        return torch.from_numpy(np.random.randint(0, 512, size=(3,)).astype(np.float32)).view(1, 3)
     else:
         with torch.no_grad():
             # Assuming the network outputs a tensor that can be interpreted as action values
@@ -75,34 +77,36 @@ class ReplayMemory:
 # Main training loop
 def train_dqn():
     q_network = DQN()
+
+    # target network is not updated as often
     target_network = DQN()
     target_network.load_state_dict(q_network.state_dict())
     target_network.eval()
 
     # Learning rate - too high = divergence, too low = slow or local min
-    LEARNING_RATE = 0.02
+    LEARNING_RATE = 0.0001
 
     # Weight decay - too high = underfitting, too low = overfitting (The depends on the nature of the poblem and whether the optimal parameter changes quickly)
-    WEIGHT_DECAY = 0.1
+    WEIGHT_DECAY = 0.001
 
     # Memory size - too high = could be learning from old experiences, too low = might not capture the diversity of the problem
-    MEMORY_SIZE = 400
+    MEMORY_SIZE = 100
 
     # How long the agent will train
-    NUM_EPISODES = 500
+    NUM_EPISODES = 200
 
     # Epsilon start and start - start and end value for epsilon which decides how much the agent should be exploring
-    EPS_START = 0.2
+    EPS_START = 0.95
     EPS_END = 0.015
 
     # Epsilon decay - determines how quickly the agent transitions from exploring the environment randomly to exploiting what it has learned
-    EPS_DECAY = 200
+    EPS_DECAY = 50
 
     # Batch size - Size of batches taken from experience replay
-    BATCH_SIZE = 10
+    BATCH_SIZE = 32
 
     # Determines the value of future rewards
-    GAMMA = 0.6
+    GAMMA = 0.1
 
     # Target update - Determines how frequently the weights for the NN are updated
     TARGET_UPDATE = 100
@@ -112,11 +116,13 @@ def train_dqn():
     steps_done = 0
 
     for episode in range(NUM_EPISODES):
+        steps_done = 0
         state = generate_random_state()
-        for _ in range(500):  # Number of steps in each episode
+        for _ in range(100):  # Number of steps in each episode
             epsilon = EPS_END + (EPS_START - EPS_END) * math.exp(-1. * steps_done / EPS_DECAY)
-            action = epsilon_greedy(state, epsilon, q_network)
-            reward = -env(action.squeeze().numpy()) # Ensure reward is a tensor
+            action = epsilon_greedy(state, epsilon, q_network)           
+            reward = -env(action.squeeze().numpy())
+
 
             next_state = generate_random_state()
             memory.push((state, action, next_state, torch.tensor([reward], dtype=torch.float).view(1, 1)))
@@ -127,18 +133,23 @@ def train_dqn():
                 transitions = memory.sample(BATCH_SIZE)
                 batch = tuple(zip(*transitions))
 
-                # Debugging shapes:
+
                 #for tensors in batch:
                 #    print([t.shape for t in tensors])
 
                 states, actions, next_states, rewards = [
                     torch.cat(tensors, dim=0) for tensors in batch
                 ]
-                state_action_values = q_network(states)
-                next_state_values = target_network(next_states).max(1)[0].detach()
-                expected_state_action_values = (next_state_values * GAMMA) + rewards
 
-                loss = nn.MSELoss()(state_action_values, expected_state_action_values.unsqueeze(1))
+                rewards = rewards.squeeze()
+                state_action_values = q_network(states)
+                #print(state_action_values)
+                state_action_values = state_action_values.squeeze()
+                next_state_values = target_network(next_states).max(1)[0].detach()
+                expected_state_action_values = np.add((next_state_values * GAMMA), rewards)
+                
+
+                loss = nn.MSELoss()(state_action_values, expected_state_action_values)
                 optimizer.zero_grad()
                 loss.backward()
                 optimizer.step()
@@ -146,8 +157,10 @@ def train_dqn():
             steps_done += 1
 
         print('episode: ', episode)
-        print('States: ', states[0], ", ", states[1], ", ", states[2])
-        print('Rewards: ', rewards[0], ", ", rewards[1], ", ", rewards[2])
+        print('States: ', state_action_values)
+        print('Rewards: ', rewards)
+        print('Actions: ', actions)
+        print('Loss: ', loss.item())
         if episode % TARGET_UPDATE == 0:
             target_network.load_state_dict(q_network.state_dict())
 
