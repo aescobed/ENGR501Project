@@ -39,14 +39,14 @@ int main (int argc, char** argv)
 
         GetTensor(&params);
 
-        printf("value === %f", params.tensor[0]);
+        //printf("value === %f", params.tensor[0]);
 
     }
 
 
 
 
-    const int arraySize = 1000000;
+    const int arraySize = 100000000;
 
 
     // Allocate memory on the CPU for arrays
@@ -60,18 +60,11 @@ int main (int argc, char** argv)
         hostArrayB[i] = i * 10;
     }
 
-    double all_gpu_timer;
-    if(world_rank==0)
-    {  
-        all_gpu_timer = MPI_Wtime();
-    }
+
 
     hostArrayC = callKernel(world_size, world_rank, arraySize, hostArrayA, hostArrayB, hostArrayC, &params);
     
-    if(world_rank==0)
-    {  
-        all_gpu_timer = MPI_Wtime() - all_gpu_timer;
-    }
+
 
     MPI_Barrier(MPI_COMM_WORLD);
 
@@ -104,7 +97,6 @@ int main (int argc, char** argv)
         SetTensorParameterValue(&params, 1, params.tensor[1]);
         SetTensorParameterValue(&params, 2, params.tensor[2]);
 
-        SetTensorOutputValue(&params, 0, all_gpu_timer);
         SetTensorOutputValue(&params, 1, 1);
         SetTensorOutputValue(&params, 2, 1);
 

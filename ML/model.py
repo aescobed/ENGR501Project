@@ -11,8 +11,8 @@ import math
 
 def apply_action_to_state(state, action):
     action_effects = np.array([
-        [10, 0, 0],  # Action 0: Increase first parameter
-        [-10, 0, 0],  # Action 1: Decrease first parameter
+        [1, 0, 0],  # Action 0: Increase first parameter
+        [-1, 0, 0],  # Action 1: Decrease first parameter
         [0, 1, 0],  # Action 2: Increase second parameter
         [0, -1, 0],  # Action 3: Decrease second parameter
         [0, 0, 1],  # Action 4: Increase third parameter

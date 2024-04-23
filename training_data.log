@@ -1,0 +1,18 @@
+2024-04-22 20:13:07,192 - INFO - Episode: 0, Step: 0
+2024-04-22 20:13:07,192 - INFO - Inputs: [813, 35, 2], Program Time: 0.00195
+2024-04-22 20:13:12,490 - INFO - Inputs: [812, 35, 2], Program Time: 0.00056
+2024-04-22 20:13:17,787 - INFO - Inputs: [811, 35, 2], Program Time: 0.00037
+2024-04-22 20:13:23,090 - INFO - Inputs: [810, 35, 2], Program Time: 0.00022
+2024-04-22 20:13:28,438 - INFO - Inputs: [809, 35, 2], Program Time: 0.00023
+2024-04-22 20:13:33,722 - INFO - Inputs: [808, 35, 2], Program Time: 0.00033
+2024-04-22 20:13:39,020 - INFO - Inputs: [807, 35, 2], Program Time: 0.00026
+2024-04-22 20:13:44,325 - INFO - Inputs: [806, 35, 2], Program Time: 0.00057
+2024-04-22 20:13:49,682 - INFO - Inputs: [805, 35, 2], Program Time: 0.00038
+2024-04-22 20:13:54,966 - INFO - Inputs: [804, 35, 2], Program Time: 0.00030
+2024-04-22 20:14:00,242 - INFO - Episode: 0, Step: 10
+2024-04-22 20:14:00,242 - INFO - Inputs: [803, 35, 2], Program Time: 0.00023
+2024-04-22 20:14:05,538 - INFO - Inputs: [802, 35, 2], Program Time: 0.00039
+2024-04-22 20:14:10,810 - INFO - Inputs: [801, 35, 2], Program Time: 0.00035
+2024-04-22 20:14:16,166 - INFO - Inputs: [800, 35, 2], Program Time: 0.00056
+2024-04-22 20:14:21,446 - INFO - Inputs: [799, 35, 2], Program Time: 0.00029
+2024-04-22 20:14:26,730 - INFO - Inputs: [798, 35, 2], Program Time: 0.00024

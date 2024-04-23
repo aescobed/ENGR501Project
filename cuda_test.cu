@@ -2,7 +2,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <math.h>
-
+#include <mpi.h>
 
 #include "include/cuda_test.cuh"
 
@@ -53,17 +53,36 @@ int* callKernel(int w_size, int comm, int arraySize, int* hA, int* hB, int* hC, 
         int threadsPerBlock = (int)MLParameters->tensor[0];
         int blocksPerGrid = ((ceil((arraySize/(double) w_size- over)/(double)repeat) - 1) / threadsPerBlock) + 1;  //(N-1)/nthreads + 1
 
+
+
+
+        double gpu_timer;
+        if(comm==0)
+        {  
+            gpu_timer = MPI_Wtime();
+        }
+
+
         // Launch the CUDA kernel
         addArrays<<<blocksPerGrid, threadsPerBlock>>>(deviceArrayA, deviceArrayB, deviceArrayC, ceil((arraySize/ (double) w_size - over)/ (double) repeat), repeat);
+
+        if(comm==0)
+        {  
+            gpu_timer = MPI_Wtime() - gpu_timer;
+            SetTensorOutputValue(MLParameters, 0, gpu_timer);
+        }
+
 
         // Copy result from GPU to CPU
         cudaMemcpy(hC + comm * (int)ceil(arraySize/ (double)w_size), deviceArrayC, (ceil(arraySize/ (double)w_size) - over) * sizeof(int), cudaMemcpyDeviceToHost);
         
 
         // Print the result
+        /*
         for (int i = comm * (int)ceil(arraySize/(double) w_size); i < (comm+1) * (int)ceil(arraySize/(double) w_size) - over; i++) {
             std::cout << "comm " << comm << ": " << hA[i] << " + " << hB[i] << " = " << hC[i] << std::endl;
         }
+        */
 
     }
     else
@@ -77,20 +96,37 @@ int* callKernel(int w_size, int comm, int arraySize, int* hA, int* hB, int* hC, 
         cudaMemcpy(deviceArrayB, hB + comm * (int)ceil(arraySize/(double) w_size), ceil(arraySize/(double) w_size) * sizeof(int), cudaMemcpyHostToDevice);
 
         // Define grid and block sizes for CUDA
-        int threadsPerBlock = 1024;
+        int threadsPerBlock = (int)MLParameters->tensor[0];
         int blocksPerGrid = (ceil(arraySize/(double)w_size/(double)repeat) - 1) / threadsPerBlock + 1;  //(N-1)/nthreads + 1
+
+
+        double gpu_timer;
+        if(comm==0)
+        {  
+            gpu_timer = MPI_Wtime();
+        }
+
 
         // Launch the CUDA kernel
         addArrays<<<blocksPerGrid, threadsPerBlock>>>(deviceArrayA, deviceArrayB, deviceArrayC, ceil(arraySize/ (double) w_size/ (double) repeat), repeat);
 
+
+        if(comm==0)
+        {  
+            gpu_timer = MPI_Wtime() - gpu_timer;
+            SetTensorOutputValue(MLParameters, 0, gpu_timer);
+        }
+
         // Copy result from GPU to CPU
         cudaMemcpy(hC + comm * (int)ceil(arraySize/ (double)w_size), deviceArrayC, ceil(arraySize/ (double) w_size) * sizeof(int), cudaMemcpyDeviceToHost);
 
+
         // Print the result
+        /*
         for (int i = comm * (int)ceil(arraySize/(double) w_size); i < (comm+1) * (int)ceil(arraySize/(double) w_size); i++) {
                 std::cout << "comm " << comm << ": " << hA[i] << " + " << hB[i] << " = " << hC[i] << std::endl;
         }
-
+        */
 
     }
     

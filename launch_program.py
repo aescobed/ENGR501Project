@@ -11,7 +11,7 @@ import math
 import torch.nn as nn
 import logging
 
-logging.basicConfig(filename='records.log', level=logging.DEBUG, filemode='w', format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename='training_data.log', level=logging.DEBUG, filemode='w', format='%(asctime)s - %(levelname)s - %(message)s')
 
 REDIS_PORT = 6380
 
@@ -62,9 +62,11 @@ for episode in range(PM.NUM_EPISODES):
         retrieved_tensor = multi_shard_client.get_tensor("parameters")
         new_time = retrieved_tensor[1,0]
 
-        print("new time: ", new_time)
+        #print("new time: ", new_time)
 
         reward = ML.GetReward(old_time, new_time)
+        if torch.all(state == next_state):
+            reward = 0
 
         memory.push((state, action, next_state, torch.tensor([reward], dtype=torch.float).view(1, 1)))
 
@@ -104,7 +106,7 @@ for episode in range(PM.NUM_EPISODES):
         if episode % PM.TARGET_UPDATE == 0:
             model.target_network.load_state_dict(model.q_network.state_dict())
 
-        if steps_done % 10 ==0:
+        if iteration % 10 ==0:
             logging.info("Episode: %d, Step: %d", episode, iteration)
         
         logging.info("Inputs: [%d, %d, %d], Program Time: %.5f", state[0,0], state[0,1], state[0,2], retrieved_tensor[1,0])
