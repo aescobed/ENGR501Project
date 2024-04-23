@@ -46,7 +46,7 @@ int main (int argc, char** argv)
 
 
 
-    const int arraySize = 1000;
+    const int arraySize = 1000000;
 
 
     // Allocate memory on the CPU for arrays

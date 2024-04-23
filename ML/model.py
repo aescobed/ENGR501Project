@@ -8,32 +8,6 @@ import math
 
 
 
-# Environment example for testing
-def env(prevState, nextState):
-    target_values = [256, 10, 12]
-
-    nextState = np.atleast_2d(nextState)
-    #prevState = torch.tensor(prevState, dtype=torch.float32)
-    #nextState = torch.tensor(nextState, dtype=torch.float32)
-    rewards = []
-
-    prevState = np.array(prevState, dtype=np.float32)
-    nextState = np.array(nextState.squeeze(), dtype=np.float32)
-
-    #for prevParam, nextParam, target in zip(prevState, nextState, target_values):
-    
-    for prevParam, nextParam, target in zip(prevState, nextState, target_values):
-        diff =  np.abs(prevParam-target) - np.abs(nextParam-target)
-        if diff > 0:
-            rewards.append(1)
-        elif diff < 0:
-            rewards.append(-1)
-        else:
-            rewards.append(0)
-        
-    rewardIndx = np.argmax(np.abs(rewards))
-    return rewards[rewardIndx]
-
 
 def apply_action_to_state(state, action):
     action_effects = np.array([
@@ -113,26 +87,26 @@ class ModelPMs:
     WEIGHT_DECAY = 0.0001
 
     # Memory size - too high = could be learning from old experiences, too low = might not capture the diversity of the problem
-    MEMORY_SIZE = 5000
+    MEMORY_SIZE = 500
 
     # How long the agent will train
-    NUM_EPISODES = 10
+    NUM_EPISODES = 500
 
     # Epsilon start and start - start and end value for epsilon which decides how much the agent should be exploring
-    EPS_START = 0.5
+    EPS_START = 0.3
     EPS_END = 0.015
 
     # Epsilon decay - determines how quickly the agent transitions from exploring the environment randomly to exploiting what it has learned
     EPS_DECAY = 10
 
     # Batch size - Size of batches taken from experience replay
-    BATCH_SIZE = 10
+    BATCH_SIZE = 50
 
     # Determines the value of future rewards
     GAMMA = 0.9
 
     # Target update - Determines how frequently the weights for the NN are updated
-    TARGET_UPDATE = 10
+    TARGET_UPDATE = 100
 
 
 
@@ -159,110 +133,7 @@ def GetReward(old_out, new_out):
         return -1
 
 
-# Main training loop
-def train_dqn():
-    q_network = DQN()
 
-    # target network is not updated as often
-    target_network = DQN()
-    target_network.load_state_dict(q_network.state_dict())
-    target_network.eval()
-
-    # Learning rate - too high = divergence, too low = slow or local min
-    LEARNING_RATE = 0.0001
-
-    # Weight decay - too high = underfitting, too low = overfitting (The depends on the nature of the poblem and whether the optimal parameter changes quickly)
-    WEIGHT_DECAY = 0.0001
-
-    # Memory size - too high = could be learning from old experiences, too low = might not capture the diversity of the problem
-    MEMORY_SIZE = 5000
-
-    # How long the agent will train
-    NUM_EPISODES = 5000
-
-    # Epsilon start and start - start and end value for epsilon which decides how much the agent should be exploring
-    EPS_START = 0.2
-    EPS_END = 0.015
-
-    # Epsilon decay - determines how quickly the agent transitions from exploring the environment randomly to exploiting what it has learned
-    EPS_DECAY = 2
-
-    # Batch size - Size of batches taken from experience replay
-    BATCH_SIZE = 10
-
-    # Determines the value of future rewards
-    GAMMA = 0.9
-
-    # Target update - Determines how frequently the weights for the NN are updated
-    TARGET_UPDATE = 10
-
-    optimizer = optim.Adam(q_network.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
-    memory = ReplayMemory(MEMORY_SIZE)
-    steps_done = 0
-
-    for episode in range(NUM_EPISODES):
-        steps_done = 0
-        state = generate_random_state()
-        for _ in range(500):  # Number of steps in each episode
-            epsilon = EPS_END + (EPS_START - EPS_END) * math.exp(-1. * steps_done / EPS_DECAY)
-            action = epsilon_greedy(state, epsilon, q_network)
-            next_state = apply_action_to_state(state, action)
-            
-
-            #reward = -env(next_state.detach().numpy())
-            reward = env(state.squeeze(), next_state.squeeze())
-
-
-            
-            memory.push((state, action, next_state, torch.tensor([reward], dtype=torch.float).view(1, 1)))
-
-            state = next_state
-
-            if len(memory) >= BATCH_SIZE:
-                transitions = memory.sample(BATCH_SIZE)
-                batch = tuple(zip(*transitions))
-
-
-                #for tensors in batch:
-                #    print([t.shape for t in tensors])
-
-                states, actions, next_states, rewards = [
-                    torch.cat(tensors, dim=0) for tensors in batch
-                ]
-                q_network(states).shape
-                current_q_values = q_network(states).gather(1, actions)
-                max_next_q_values = target_network(next_states).max(1)[0].detach()
-                max_next_q_values = max_next_q_values.clone().detach()
-                expected_q_values = (GAMMA * max_next_q_values)
-                
-                rewards = rewards.clone().detach()
-                rewards = rewards.squeeze()
-                expected_q_values = expected_q_values + rewards
-
-
-                # Compute loss
-                loss = nn.MSELoss()(current_q_values, expected_q_values.unsqueeze(1))
-                optimizer.zero_grad()
-                loss.backward()
-                optimizer.step()
-
-            steps_done += 1
-
-
-        if episode % 10 == 0:
-            print('episode: ', episode)
-            #print('Q values: ', current_q_values)
-            print('Rewards: ', rewards)
-            #print('Actions: ', actions)
-            print('State: ', state)
-            print('Loss: ', loss.item())
-
-
-        if episode % TARGET_UPDATE == 0:
-            target_network.load_state_dict(q_network.state_dict())
-            
-
-    print('Training complete')
 
 if __name__ == '__main__':
     train_dqn()
