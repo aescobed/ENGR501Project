@@ -109,7 +109,7 @@ for episode in range(PM.NUM_EPISODES):
         if iteration % 10 ==0:
             logging.info("Episode: %d, Step: %d", episode, iteration)
         
-        logging.info("Inputs: [%d, %d, %d], Program Time: %.5f", state[0,0], state[0,1], state[0,2], retrieved_tensor[1,0])
+        logging.info("Inputs: [%d, %d, %d], Program Time: %.8f", state[0,0], state[0,1], state[0,2], retrieved_tensor[1,0])
 
 
 
