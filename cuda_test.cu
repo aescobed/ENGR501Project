@@ -50,7 +50,7 @@ int* callKernel(int w_size, int comm, int arraySize, int* hA, int* hB, int* hC, 
         cudaMemcpy(deviceArrayB, hB + comm * (int)ceil(arraySize/(double) w_size), (ceil(arraySize/ (double)w_size) - over) * sizeof(int), cudaMemcpyHostToDevice);
 
         // Define grid and block sizes for CUDA
-        int threadsPerBlock = 1024;
+        int threadsPerBlock = (int)MLParameters->tensor[0];
         int blocksPerGrid = ((ceil((arraySize/(double) w_size- over)/(double)repeat) - 1) / threadsPerBlock) + 1;  //(N-1)/nthreads + 1
 
         // Launch the CUDA kernel

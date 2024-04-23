@@ -1,0 +1,37 @@
+2024-04-22 17:13:50,294 - INFO - Inputs: [945, 6, 1], Program Time: 0.09238
+2024-04-22 17:13:55,588 - INFO - Inputs: [945, 7, 1], Program Time: 0.09619
+2024-04-22 17:14:00,814 - INFO - Inputs: [945, 6, 1], Program Time: 0.09555
+2024-04-22 17:14:06,050 - INFO - Inputs: [945, 7, 1], Program Time: 0.08716
+2024-04-22 17:14:11,278 - INFO - Inputs: [945, 6, 1], Program Time: 0.09168
+2024-04-22 17:14:16,522 - INFO - Inputs: [945, 7, 1], Program Time: 0.10231
+2024-04-22 17:14:21,766 - INFO - Inputs: [945, 8, 1], Program Time: 0.09217
+2024-04-22 17:14:27,010 - INFO - Inputs: [945, 9, 1], Program Time: 0.09228
+2024-04-22 17:14:32,238 - INFO - Inputs: [945, 10, 1], Program Time: 0.08958
+2024-04-22 17:14:37,492 - INFO - Episode: 0, Step: 9
+2024-04-22 17:14:37,492 - INFO - Inputs: [945, 11, 1], Program Time: 0.08543
+2024-04-22 17:14:42,736 - INFO - Inputs: [945, 12, 1], Program Time: 0.08594
+2024-04-22 17:14:47,974 - INFO - Inputs: [945, 13, 1], Program Time: 0.08834
+2024-04-22 17:14:53,203 - INFO - Inputs: [945, 14, 1], Program Time: 0.10212
+2024-04-22 17:14:58,434 - INFO - Inputs: [945, 15, 1], Program Time: 0.09238
+2024-04-22 17:15:03,665 - INFO - Inputs: [945, 16, 1], Program Time: 0.09034
+2024-04-22 17:15:08,908 - INFO - Inputs: [945, 17, 1], Program Time: 0.09864
+2024-04-22 17:15:14,156 - INFO - Inputs: [945, 18, 1], Program Time: 0.09706
+2024-04-22 17:15:19,399 - INFO - Inputs: [945, 19, 1], Program Time: 0.08902
+2024-04-22 17:15:24,627 - INFO - Inputs: [945, 20, 1], Program Time: 0.08249
+2024-04-22 17:15:29,875 - INFO - Episode: 0, Step: 19
+2024-04-22 17:15:29,875 - INFO - Inputs: [945, 21, 1], Program Time: 0.08792
+2024-04-22 17:15:35,128 - INFO - Inputs: [945, 22, 1], Program Time: 0.08701
+2024-04-22 17:15:40,378 - INFO - Inputs: [955, 22, 1], Program Time: 0.08786
+2024-04-22 17:15:45,624 - INFO - Inputs: [965, 22, 1], Program Time: 0.08531
+2024-04-22 17:15:50,869 - INFO - Inputs: [975, 22, 1], Program Time: 0.08619
+2024-04-22 17:15:56,113 - INFO - Inputs: [985, 22, 1], Program Time: 0.09387
+2024-04-22 17:16:01,362 - INFO - Inputs: [995, 22, 1], Program Time: 0.08212
+2024-04-22 17:16:06,605 - INFO - Inputs: [1005, 22, 1], Program Time: 0.08807
+2024-04-22 17:16:11,852 - INFO - Inputs: [1015, 22, 1], Program Time: 0.08640
+2024-04-22 17:16:17,101 - INFO - Inputs: [1024, 22, 1], Program Time: 0.08868
+2024-04-22 17:16:22,354 - INFO - Episode: 0, Step: 29
+2024-04-22 17:16:22,354 - INFO - Inputs: [1024, 22, 1], Program Time: 0.08311
+2024-04-22 17:16:27,608 - INFO - Inputs: [1024, 22, 1], Program Time: 0.09379
+2024-04-22 17:16:32,863 - INFO - Inputs: [1024, 22, 1], Program Time: 0.08254
+2024-04-22 17:16:38,096 - INFO - Inputs: [1024, 22, 1], Program Time: 0.08602
+2024-04-22 17:16:43,345 - INFO - Inputs: [1024, 22, 1], Program Time: 0.09278

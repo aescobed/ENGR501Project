@@ -10,7 +10,7 @@ import math
 
 # Environment example for testing
 def env(prevState, nextState):
-    target_values = [256, 10, 12]
+    target_values = [256, 128, 64]
 
     nextState = np.atleast_2d(nextState)
     #prevState = torch.tensor(prevState, dtype=torch.float32)
@@ -37,33 +37,20 @@ def env(prevState, nextState):
 
 def apply_action_to_state(state, action):
     action_effects = np.array([
-        [10, 0, 0],  # Action 0: Increase first parameter
-        [-10, 0, 0],  # Action 1: Decrease first parameter
-        [0, 1, 0],  # Action 2: Increase second parameter
-        [0, -1, 0],  # Action 3: Decrease second parameter
-        [0, 0, 1],  # Action 4: Increase third parameter
-        [0, 0, -1]   # Action 5: Decrease third parameter
+        [2, 0, 0],  # Action 0: Increase first parameter
+        [-2, 0, 0],  # Action 1: Decrease first parameter
+        [0, 2, 0],  # Action 2: Increase second parameter
+        [0, -2, 0],  # Action 3: Decrease second parameter
+        [0, 0, 2],  # Action 4: Increase third parameter
+        [0, 0, -2]   # Action 5: Decrease third parameter
     ])
-
-    # Apply action effect to create the new state candidate
-    new_state = state + action_effects[action]
-
-    # Ensure new state values do not exceed boundaries
-    new_state[0, 0] = min(max(new_state[0, 0], 1), 1024)
-    new_state[0, 1] = min(max(new_state[0, 1], 0), 50)
-    new_state[0, 2] = min(max(new_state[0, 2], 1), 4)
-
-
-    return torch.tensor(new_state, dtype=torch.float)
+    return torch.tensor(state + action_effects[action], dtype=torch.float)
      
 
 
 
 def generate_random_state():
-    state = np.zeros((1,3))
-    state[0, 0] = np.random.randint(1, 1025)  # parameter for block size
-    state[0, 1] = np.random.randint(0, 51)  # parameter for number of repeats
-    state[0, 2] = np.random.randint(1, 5)  # parameter for number of mpi threads
+    state = np.random.randint(0, 512, size=(1, 3))  # 1x3 matrix with random integers from 0 to 511
     return torch.from_numpy(state).float()  # Convert to a PyTorch tensor
 
 
@@ -104,61 +91,6 @@ class ReplayMemory:
     def __len__(self):
         return len(self.memory)
 
-
-class ModelPMs:
-    # Learning rate - too high = divergence, too low = slow or local min
-    LEARNING_RATE = 0.0001
-
-    # Weight decay - too high = underfitting, too low = overfitting (The depends on the nature of the poblem and whether the optimal parameter changes quickly)
-    WEIGHT_DECAY = 0.0001
-
-    # Memory size - too high = could be learning from old experiences, too low = might not capture the diversity of the problem
-    MEMORY_SIZE = 5000
-
-    # How long the agent will train
-    NUM_EPISODES = 10
-
-    # Epsilon start and start - start and end value for epsilon which decides how much the agent should be exploring
-    EPS_START = 0.5
-    EPS_END = 0.015
-
-    # Epsilon decay - determines how quickly the agent transitions from exploring the environment randomly to exploiting what it has learned
-    EPS_DECAY = 10
-
-    # Batch size - Size of batches taken from experience replay
-    BATCH_SIZE = 10
-
-    # Determines the value of future rewards
-    GAMMA = 0.9
-
-    # Target update - Determines how frequently the weights for the NN are updated
-    TARGET_UPDATE = 10
-
-
-
-
-
-class MLModel:
-    def __init__(self):
-        self.q_network = DQN()
-
-        # target network is not updated as often
-        self.target_network = DQN()
-        self.target_network.load_state_dict(self.q_network.state_dict())
-        self.target_network.eval()
-
-        self.state = generate_random_state()
-
-
-
-def GetReward(old_out, new_out):
-    if old_out > new_out:
-        return 1
-
-    else:
-        return -1
-
-
 # Main training loop
 def train_dqn():
     q_network = DQN()
@@ -194,7 +126,7 @@ def train_dqn():
     GAMMA = 0.9
 
     # Target update - Determines how frequently the weights for the NN are updated
-    TARGET_UPDATE = 10
+    TARGET_UPDATE = 100
 
     optimizer = optim.Adam(q_network.parameters(), lr=LEARNING_RATE, weight_decay=WEIGHT_DECAY)
     memory = ReplayMemory(MEMORY_SIZE)
@@ -264,5 +196,5 @@ def train_dqn():
 
     print('Training complete')
 
-if __name__ == '__main__':
-    train_dqn()
+
+train_dqn()

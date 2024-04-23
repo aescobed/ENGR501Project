@@ -26,16 +26,16 @@ int main (int argc, char** argv)
  
 
         client = StartClient();
-        params = CreateTensorSender(4, client);
+        params = CreateTensorSender(3, client);
 
         SetTensorParameterValue(&params, 0, 1);
         SetTensorParameterValue(&params, 1, 1);
         SetTensorParameterValue(&params, 2, 1);
-        SetTensorParameterValue(&params, 3, 1);
+
         SetTensorOutputValue(&params, 0, 1);
         SetTensorOutputValue(&params, 1, 1);
         SetTensorOutputValue(&params, 2, 1);
-        SetTensorOutputValue(&params, 3, 1);
+
 
         GetTensor(&params);
 
@@ -46,7 +46,7 @@ int main (int argc, char** argv)
 
 
 
-    const int arraySize = 10;
+    const int arraySize = 1000;
 
 
     // Allocate memory on the CPU for arrays
@@ -103,11 +103,11 @@ int main (int argc, char** argv)
         SetTensorParameterValue(&params, 0, params.tensor[0]);
         SetTensorParameterValue(&params, 1, params.tensor[1]);
         SetTensorParameterValue(&params, 2, params.tensor[2]);
-        SetTensorParameterValue(&params, 3, params.tensor[3]);
+
         SetTensorOutputValue(&params, 0, all_gpu_timer);
         SetTensorOutputValue(&params, 1, 1);
         SetTensorOutputValue(&params, 2, 1);
-        SetTensorOutputValue(&params, 3, 1);
+
 
         SendTensor(&params);
 
