@@ -10,13 +10,14 @@
 // Kernel function to add two arrays element-wise
 __global__ void addArrays(int* a, int* b, int* c, int size, int repeat) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
-    
+    for (int j = 0; j < 10; j++)
+    {
     if (idx < size) 
         for(int i=0; i < repeat; i++)
             if (idx + i*size < size*repeat)
                 //TODO: fix possible out of bounds
                 c[idx + i*size] = a[idx + i*size] + b[idx + i*size];
-        
+    }    
     
     
 }
@@ -62,9 +63,11 @@ int* callKernel(int w_size, int comm, int arraySize, int* hA, int* hB, int* hC, 
             gpu_timer = MPI_Wtime();
         }
 
-
+        for (int i = 0; i < 1000; i++)
+        {
         // Launch the CUDA kernel
         addArrays<<<blocksPerGrid, threadsPerBlock>>>(deviceArrayA, deviceArrayB, deviceArrayC, ceil((arraySize/ (double) w_size - over)/ (double) repeat), repeat);
+        }
 
         if(comm==0)
         {  

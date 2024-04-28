@@ -50,7 +50,7 @@ for episode in range(PM.NUM_EPISODES):
         mpirun = exp.create_run_settings(
             "./program", run_command="mpirun"
         )
-        mpirun.set_tasks(state[0,2])
+        mpirun.set_tasks(next_state[0,2])
         #mpirun.set_tasks(4)
 
         SimulationModel = exp.create_model("Simulation", mpirun)
