@@ -11,8 +11,8 @@ import math
 
 def apply_action_to_state(state, action):
     action_effects = np.array([
-        [1, 0, 0],  # Action 0: Increase first parameter
-        [-1, 0, 0],  # Action 1: Decrease first parameter
+        [10, 0, 0],  # Action 0: Increase first parameter
+        [-10, 0, 0],  # Action 1: Decrease first parameter
         [0, 1, 0],  # Action 2: Increase second parameter
         [0, -1, 0],  # Action 3: Decrease second parameter
         [0, 0, 1],  # Action 4: Increase third parameter
@@ -93,11 +93,11 @@ class ModelPMs:
     NUM_EPISODES = 500
 
     # Epsilon start and start - start and end value for epsilon which decides how much the agent should be exploring
-    EPS_START = 0.3
+    EPS_START = 0.9
     EPS_END = 0.015
 
     # Epsilon decay - determines how quickly the agent transitions from exploring the environment randomly to exploiting what it has learned
-    EPS_DECAY = 10
+    EPS_DECAY = 50
 
     # Batch size - Size of batches taken from experience replay
     BATCH_SIZE = 50
@@ -106,7 +106,7 @@ class ModelPMs:
     GAMMA = 0.9
 
     # Target update - Determines how frequently the weights for the NN are updated
-    TARGET_UPDATE = 100
+    TARGET_UPDATE = 20
 
 
 

@@ -33,8 +33,8 @@ old_time = 999999
 for episode in range(PM.NUM_EPISODES):
     
     steps_done = 0
-    state = model.state
-    for iteration in range(50):  # Number of steps in each episode
+    state = ML.generate_random_state()
+    for iteration in range(200):  # Number of steps in each episode
         epsilon = PM.EPS_END + (PM.EPS_START - PM.EPS_END) * math.exp(-1. * steps_done / PM.EPS_DECAY)
         action = ML.epsilon_greedy(state, epsilon, model.q_network)
 

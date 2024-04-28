@@ -106,10 +106,11 @@ int* callKernel(int w_size, int comm, int arraySize, int* hA, int* hB, int* hC, 
             gpu_timer = MPI_Wtime();
         }
 
-
+        for (int i = 0; i < 1000; i++)
+        {
         // Launch the CUDA kernel
         addArrays<<<blocksPerGrid, threadsPerBlock>>>(deviceArrayA, deviceArrayB, deviceArrayC, ceil(arraySize/ (double) w_size/ (double) repeat), repeat);
-
+        }
 
         if(comm==0)
         {  

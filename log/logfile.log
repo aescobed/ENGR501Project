@@ -123,3 +123,19 @@ Model: multi shard logger@12-51-45:ERROR: Unable to connect to backend database:
 Model: multi shard logger@12-51-46:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
 Model: multi shard logger@12-51-47:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
 SmartRedis Library@12-51-48:ERROR: Exception at "/project/src/cpp/rediscluster.cpp", line 1119: Unable to connect to backend database: ERR This instance has cluster support disabled
+Model: multi shard logger@09-16-40:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
+Model: multi shard logger@09-16-41:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
+Model: multi shard logger@09-16-42:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
+Model: multi shard logger@09-16-43:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
+Model: multi shard logger@09-16-44:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
+Model: multi shard logger@09-16-45:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
+Model: multi shard logger@09-16-46:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
+Model: multi shard logger@09-16-47:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
+Model: multi shard logger@09-16-48:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
+Model: multi shard logger@09-16-49:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
+Model: multi shard logger@09-16-50:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
+Model: multi shard logger@09-16-51:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
+Model: multi shard logger@09-16-52:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
+Model: multi shard logger@09-16-53:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
+Model: multi shard logger@09-16-54:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
+Model: multi shard logger@09-16-55:ERROR: Unable to connect to backend database: ERR This instance has cluster support disabled
